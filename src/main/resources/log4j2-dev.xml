@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+    <Properties>
+        <Property name="LOG_HOME">/wls/applogs/rtlog</Property>
+        <Property name="FILE_SIZE">300M</Property>
+        <Property name="log_pattern">%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</Property>
+        <Property name="rolling_file_name">-%d{yyyy-MM-dd}.%i.zip</Property>
+        <Property name="rollover_strategy_max">30</Property>
+
+        <Property name="LOG_HOME_BIZ">${LOG_HOME}/iapslogs/iaps-web/biz</Property>
+        <Property name="LOG_HOME_ERROR">${LOG_HOME}/iapslogs/iaps-web/error</Property>
+        <Property name="LOG_HOME_SERVICE">${LOG_HOME}/iapslogs/iaps-web/service</Property>
+        <Property name="LOG_HOME_COMMON">${LOG_HOME}/iapslogs/iaps-web/common</Property>
+    </Properties>
+    <appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="${log_pattern}"/>
+        </Console>
+        <!-- biz log -->
+        <!--<File name="bizRolling" fileName="${LOG_HOME_BIZ}/iaps-biz.txt" append="true">-->
+        <!--<PatternLayout pattern="${log_pattern}"/>-->
+        <!--</File>-->
+        <RollingRandomAccessFile name="bizRolling"
+                                 fileName="${LOG_HOME_BIZ}/iaps-biz.txt"
+                                 filePattern="${LOG_HOME_BIZ}/iaps-biz${rolling_file_name}"
+                                 immediateFlush="false" append="true">
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${rollover_strategy_max}"/>
+        </RollingRandomAccessFile>
+
+        <!-- service -->
+        <RollingRandomAccessFile name="serviceRolling"
+                                 fileName="${LOG_HOME_SERVICE}/iaps-service.txt"
+                                 filePattern="${LOG_HOME_SERVICE}/iaps-service${rolling_file_name}"
+                                 immediateFlush="false" append="true">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${rollover_strategy_max}"/>
+        </RollingRandomAccessFile>
+
+        <!-- error -->
+        <RollingRandomAccessFile name="errorRolling"
+                                 fileName="${LOG_HOME_ERROR}/iaps-error.txt"
+                                 filePattern="${LOG_HOME_ERROR}/iaps-error${rolling_file_name}"
+                                 immediateFlush="false" append="true">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${rollover_strategy_max}"/>
+        </RollingRandomAccessFile>
+        <!-- common -->
+        <RollingRandomAccessFile name="iapsCommonRolling"
+                                 fileName="${LOG_HOME_COMMON}/iaps-common.txt"
+                                 filePattern="${LOG_HOME_COMMON}/iaps-common${rolling_file_name}"
+                                 immediateFlush="false" append="true">
+            <Filters>
+                <ThresholdFilter level="ERROR" onMatch="DENY" onMismatch="ACCEPT"/>
+            </Filters>
+            <PatternLayout>
+                <Pattern>${log_pattern}</Pattern>
+                <Charset>UTF-8</Charset>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="${FILE_SIZE}"/>
+            </Policies>
+            <DefaultRolloverStrategy max="${rollover_strategy_max}"/>
+        </RollingRandomAccessFile>
+    </appenders>
+
+    <loggers>
+        <AsyncLogger name="paff.common" level="error"/>
+        <AsyncLogger name="paff.aop" level="error"/>
+        <AsyncLogger name="paff.sms" level="error"/>
+        <AsyncLogger name="paff.email" level="error"/>
+        <AsyncLogger name="com.pinganfu.pingamq" level="error"/>
+
+        <AsyncRoot level="info">
+            <appender-ref ref="Console"/>
+            <appender-ref ref="bizRolling"/>
+            <appender-ref ref="errorRolling"/>
+        </AsyncRoot>
+    </loggers>
+</Configuration>
